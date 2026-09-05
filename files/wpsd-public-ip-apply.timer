@@ -1,0 +1,10 @@
+[Unit]
+Description=Periodically reapply WPSD public IP dashboard customisation
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=5min
+Persistent=true
+
+[Install]
+WantedBy=timers.target
