@@ -1,0 +1,58 @@
+#!/bin/bash
+set -u
+
+DASHBOARD="/var/www/dashboard"
+INDEX="${DASHBOARD}/index.php"
+API_DIR="${DASHBOARD}/api"
+API="${API_DIR}/publicip.php"
+SOURCE_API="/usr/local/share/wpsd-public-ip/publicip.php"
+
+[ -f "$INDEX" ] || exit 0
+
+install -d -m 755 "$API_DIR"
+install -m 644 "$SOURCE_API" "$API"
+chown www-data:www-data "$API"
+chmod 644 "$API"
+
+if ! grep -q 'id="PublicIP"' "$INDEX"; then
+    sed -i \
+        's#<span id="DateTime"></span>#<span id="DateTime"></span><span id="PublicIP" style="margin-left:20px;"></span>#' \
+        "$INDEX"
+fi
+
+if ! grep -q 'function reloadPublicIP' "$INDEX"; then
+    python3 - "$INDEX" <<'PY'
+from pathlib import Path
+import sys
+
+path = Path(sys.argv[1])
+text = path.read_text()
+
+marker = "        reloadDateTime();"
+
+snippet = r'''
+        function reloadPublicIP() {
+            $.get("/api/publicip.php", function(data) {
+                $("#PublicIP").text("Public IP: " + data);
+            }).fail(function() {
+                $("#PublicIP").text("Public IP: Unavailable");
+            });
+
+            setTimeout(reloadPublicIP, 300000);
+        }
+
+        reloadPublicIP();
+'''
+
+if marker not in text:
+    raise SystemExit("reloadDateTime() marker not found in index.php")
+
+text = text.replace(marker, marker + "\n" + snippet, 1)
+path.write_text(text)
+PY
+fi
+
+if command -v php >/dev/null 2>&1; then
+    php -l "$INDEX" >/dev/null || exit 1
+    php -l "$API" >/dev/null || exit 1
+fi
