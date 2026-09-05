@@ -1,0 +1,8 @@
+[Unit]
+Description=Reapply WPSD public IP dashboard customisation
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/wpsd-public-ip-apply
