@@ -1,5 +1,8 @@
 # wpsd-public-ip
-Inject API to your WPSD dashboard for Public IP Display
+Inject an API to your WPSD dashboard for Public IP Display
+
+<img width="1874" height="340" alt="image" src="https://github.com/user-attachments/assets/f8bd625f-102e-479a-a6f3-ca2f43ac47b1" />
+
 
 #How to install the script
 ssh to your wpsd
