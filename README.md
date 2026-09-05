@@ -21,3 +21,7 @@ curl -s http://127.0.0.1/api/publicip.php
 active
 1
 your.public.ip.address
+
+
+Alternative way: refer to the PDF guide
+[wpsd-public-ip-install-steps.pdf](https://github.com/user-attachments/files/31858449/wpsd-public-ip-install-steps.pdf)
